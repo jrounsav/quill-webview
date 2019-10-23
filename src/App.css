@@ -1,22 +1,19 @@
-.App {
-  text-align: center;
+body {
+  margin: 0;
 }
 
-.App-logo {
-  height: 40vmin;
+.ql-toolbar {
+  position: fixed;
+  z-index: 100;
+  background: white;
+  top: 0;
+  width: 100%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.no-scroll {
+  overflow: hidden;
 }
 
-.App-link {
-  color: #09d3ac;
+#editor .ql-container {
+  border: none
 }
