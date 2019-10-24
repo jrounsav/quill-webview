@@ -28,33 +28,41 @@ class Editor extends React.Component {
     this.handleEmitMessage({ type: 'emitTextChange', payload: delta });
   };
 
+  emitConsole = data => {
+    this.handleEmitMessage({ type: 'console', payload: data });
+  };
+
   handleIncomingMessage = (message = {}) => {
-    const data = message.data ? message.data : {};
-    if (data.type) {
-      switch (data.type) {
-        case 'setContent':
-          const html = data.payload;
-          var editor = document.getElementsByClassName('ql-editor');
-          editor[0].innerHTML = html;
-          break;
-        default:
-          console.error('Improper Incoming');
-          break;
+    try {
+      const data = message.data ? JSON.parse(message.data) : {};
+      console.log(data);
+      if (data.type) {
+        switch (data.type) {
+          case 'setContents':
+            const html = data.payload;
+            var editor = document.getElementsByClassName('ql-editor');
+            editor[0].innerHTML = html;
+            break;
+          default:
+            console.error('Improper Incoming');
+            break;
+        }
       }
+    } catch (e) {
+      this.emitConsole(e);
     }
   };
 
   handleEmitMessage = (message = {}) => {
     if (message.type) {
-      // const data = message.type ? message.data : {};
-
       switch (message.type) {
         case 'emitTextChange':
           var editor = document.getElementsByClassName('ql-editor')[0];
-          window.postMessage({
+          const message = {
             type: 'emitTextChange',
             payload: editor.innerHTML
-          });
+          };
+          window.postMessage(JSON.stringify(message));
           break;
         default:
           console.error('Improper Emission');
