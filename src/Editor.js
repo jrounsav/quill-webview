@@ -62,7 +62,7 @@ class Editor extends React.Component {
             type: 'emitTextChange',
             payload: editor.innerHTML
           };
-          window.postMessage(JSON.stringify(message));
+          window.postMessage(JSON.stringify(message), '*');
           break;
         default:
           console.error('Improper Emission');
