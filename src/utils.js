@@ -48,9 +48,7 @@ function sizeEditor() {
   if (toolbar) {
     const editor = document.getElementById('editor');
     const toolHeight = toolbar.clientHeight;
-    console.log(toolbar, editor, toolHeight);
     editor.style.paddingTop = toolHeight;
-    console.log(editor);
   }
 }
 

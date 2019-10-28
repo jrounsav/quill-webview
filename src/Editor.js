@@ -13,7 +13,8 @@ class Editor extends React.Component {
     theme: 'snow',
     modules: {
       toolbar: false
-    }
+    },
+    readOnly: true
   };
 
   componentDidMount() {
@@ -21,10 +22,11 @@ class Editor extends React.Component {
     window.addEventListener('message', this.handleIncomingMessage);
     this.editor = new Quill(this.editorRef.current, this.options);
     sizeEditor();
-    this.editor.on('text-change', this.emit);
+    this.editor.on('text-change', this.emitTextChange);
+    this.handleEmitMessage({ type: 'editorReady' });
   }
 
-  emit = (delta, oldDelta, source) => {
+  emitTextChange = (delta, oldDelta, source) => {
     this.handleEmitMessage({ type: 'emitTextChange', payload: delta });
   };
 
@@ -32,20 +34,59 @@ class Editor extends React.Component {
     this.handleEmitMessage({ type: 'console', payload: data });
   };
 
+  enableEditor = () => {
+    this.editor.enable();
+  };
+
+  disableEditor = () => {
+    this.editor.disable();
+  };
+
+  setPlaceholder = data => {
+    try {
+      const editor = document.getElementsByClassName('ql-editor')[0];
+      editor.setAttribute('data-placeholder', data);
+    } catch (e) {
+      this.emitConsole(e);
+    }
+  };
+
+  setContents = html => {
+    try {
+      var editor = document.getElementsByClassName('ql-editor');
+      const inner = editor[0].innerHTML;
+      if (inner !== html) {
+        editor[0].innerHTML = html;
+      }
+    } catch (e) {
+      this.emitConsole(e);
+    }
+  };
+
   handleIncomingMessage = (message = {}) => {
     try {
       const data = message.data ? JSON.parse(message.data) : {};
       if (data.type) {
         switch (data.type) {
+          case 'configureEditor':
+            const { readOnly, placeholder, startContents } = data.payload;
+
+            readOnly ? this.disableEditor() : this.enableEditor();
+            placeholder && this.setPlaceholder(placeholder);
+            startContents && this.setContents(startContents);
+
+            break;
+          case 'disableEditor':
+            this.disableEditor();
+            break;
+          case 'enableEditor':
+            this.enableEditor();
+            break;
+          case 'setPlaceholder':
+            this.setPlaceholder(data.payload);
+            break;
           case 'setContents':
-            this.emitConsole('1');
-            const html = data.payload;
-            var editor = document.getElementsByClassName('ql-editor');
-            const inner = editor[0].innerHTML;
-            if (inner !== html) {
-              editor[0].innerHTML = html;
-            }
-            this.emitConsole('Set contents');
+            this.setContents(data.payload);
             break;
           case 'insertContents':
             let selection = this.editor.getSelection();
@@ -69,16 +110,22 @@ class Editor extends React.Component {
   handleEmitMessage = (message = {}) => {
     if (message.type) {
       switch (message.type) {
+        case 'editorReady':
+          window.ReactNativeWebView.postMessage(
+            JSON.stringify({ type: 'editorReady' }),
+            '*'
+          );
+          break;
         case 'emitTextChange':
           var editor = document.getElementsByClassName('ql-editor')[0];
           message = {
             type: 'emitTextChange',
             payload: editor.innerHTML
           };
-          window.postMessage(JSON.stringify(message), '*');
+          window.ReactNativeWebView.postMessage(JSON.stringify(message), '*');
           break;
         case 'console':
-          window.postMessage(JSON.stringify(message), '*');
+          window.ReactNativeWebView.postMessage(JSON.stringify(message), '*');
           break;
         default:
           console.error('Improper Emission');
