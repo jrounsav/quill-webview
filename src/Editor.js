@@ -12,7 +12,7 @@ class Editor extends React.Component {
   options = {
     theme: 'snow',
     modules: {
-      toolbar: false
+      toolbar: true
     },
     readOnly: true
   };
@@ -42,6 +42,28 @@ class Editor extends React.Component {
     this.editor.disable();
   };
 
+  hideToolbar() {
+    try {
+      const toolbar = document.getElementsByClassName('ql-toolbar')[0];
+      if (toolbar.classList.contains('show')) {
+        toolbar.classList.remove('show');
+      }
+    } catch (e) {
+      this.emitConsole(e);
+    }
+  }
+
+  showToolbar() {
+    try {
+      const toolbar = document.getElementsByClassName('ql-toolbar')[0];
+      if (!toolbar.classList.contains('show')) {
+        toolbar.classList.add('show');
+      }
+    } catch (e) {
+      this.emitConsole(e);
+    }
+  }
+
   setPlaceholder = data => {
     try {
       const editor = document.getElementsByClassName('ql-editor')[0];
@@ -69,18 +91,30 @@ class Editor extends React.Component {
       if (data.type) {
         switch (data.type) {
           case 'configureEditor':
-            const { readOnly, placeholder, startContents } = data.payload;
+            const {
+              readOnly,
+              placeholder,
+              showToolbar,
+              startContents
+            } = data.payload;
 
+            showToolbar && this.showToolbar();
             readOnly ? this.disableEditor() : this.enableEditor();
             placeholder && this.setPlaceholder(placeholder);
             startContents && this.setContents(startContents);
-
+            sizeEditor();
             break;
           case 'disableEditor':
             this.disableEditor();
             break;
           case 'enableEditor':
             this.enableEditor();
+            break;
+          case 'enableToolbar':
+            this.showToolbar();
+            break;
+          case 'disableToolbar':
+            this.hideToolbar();
             break;
           case 'setPlaceholder':
             this.setPlaceholder(data.payload);

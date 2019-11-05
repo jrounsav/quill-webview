@@ -44,11 +44,15 @@ function initQuill(options) {
 }
 
 function sizeEditor() {
-  const toolbar = document.getElementsByClassName('ql-toolbar')[0];
-  if (toolbar) {
-    const editor = document.getElementById('editor');
-    const toolHeight = toolbar.clientHeight;
-    editor.style.paddingTop = toolHeight;
+  try {
+    const toolbar = document.getElementsByClassName('ql-toolbar')[0];
+    if (toolbar) {
+      const editor = document.getElementsByClassName('ql-editor')[0];
+      const toolHeight = toolbar.clientHeight;
+      editor.style.marginTop = toolHeight + 'px';
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 

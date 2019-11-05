@@ -8,11 +8,16 @@ body {
 }
 
 .ql-toolbar {
+  display: none;
   position: fixed;
   z-index: 100;
   background: white;
   top: 0;
   width: 100%;
+}
+
+.show {
+  display: block !important;
 }
 
 .no-scroll {
