@@ -126,7 +126,7 @@ class Editor extends React.Component {
             let selection = this.editor.getSelection();
             const textToInsert = data.payload;
             if (!selection) {
-              selection = { index: 0, length: 0 };
+              selection = { index: this.editor.getLength(), length: 0 };
             }
             this.editor.insertText(selection.index, textToInsert);
             this.emitConsole(selection);
