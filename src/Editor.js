@@ -147,7 +147,6 @@ class Editor extends React.Component {
         case 'editorReady':
           window.ReactNativeWebView.postMessage(
             JSON.stringify({ type: 'editorReady' }),
-            '*'
           );
           break;
         case 'emitTextChange':
@@ -156,10 +155,10 @@ class Editor extends React.Component {
             type: 'emitTextChange',
             payload: editor.innerHTML
           };
-          window.ReactNativeWebView.postMessage(JSON.stringify(message), '*');
+          window.ReactNativeWebView.postMessage(JSON.stringify(message));
           break;
         case 'console':
-          window.ReactNativeWebView.postMessage(JSON.stringify(message), '*');
+          window.ReactNativeWebView.postMessage(JSON.stringify(message));
           break;
         default:
           console.error('Improper Emission');
